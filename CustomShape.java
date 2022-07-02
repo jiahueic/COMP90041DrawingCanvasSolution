@@ -1,72 +1,51 @@
-import java.util.ArrayList;
 
 /**
- * A Canvas for adding shapes to. Canvases can hold an arbitrary number of shapes
- * and will render shapes added first above shapes added later.
+ * A custom shape that a user can configure.
+ * The CustomShape objects are backed by a 2-dimensional array.
+ * Inidividual "pixels" of the shape can be set, to create the shape.
  * 
  * @author Dengke Sha
  *
  */
-public class Canvas {
+public class CustomShape extends Shape {
 	
-	// A single character string to use as the background for the Canvas.
-	private String background;
-	
-	// Dimensions of the canvas.
-	private int width;
-	private int height;
-	
-	// List of shapes the canvas holds.
-	private ArrayList<Shape> shapes = new ArrayList<Shape>();
+	// The pixels within this shape and whether they are on or off.
+	private boolean[][] pixels;
 
 	/**
-	 * Constructs a new canvas with a particular width and height.
-	 * @param width   the width of the canvas
-	 * @param height  the height of the canvas
+	 * Create a CustomShape.
+	 * @param symbol     the symbol for drawing the shape with
+	 * @param positionX  the x position of the top-left corner of the shape on canvas
+	 * @param positionY  the y position of the top-left corner of the shape on canvas
+	 * @param width      the width of the shape
+	 * @param height     the height of the shape
 	 */
-	public Canvas(String background, int width, int height) {
-		super();
-		this.background = background;
-		this.width = width;
-		this.height = height;
+	public CustomShape(String symbol, int positionX, int positionY, int width, int height) {
+		super(symbol, positionX, positionY, width, height);
+		this.pixels = new boolean[height][width];
 	}
 	
 	/**
-	 * Draw the canvas and the shapes on the canvas.
+	 * Set a pixel to be on for this custom shape. (x, y) is the location
+	 * of a pixel on this image to be set to "on". In these relative
+	 * co-ordinates, the top-left of shape is (0, 0).
+	 * 
+	 * @param x  the local x location for the pixel to set
+	 * @param y  the local y location for the pixel to set
 	 */
-	public void draw() {
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
+	public void setPixel(int x, int y) {
+		pixels[y][x] = true;
+	}
 
-				boolean isPixelDrawn = false;
-
-				for (Shape shape : shapes) {
-
-					isPixelDrawn = shape.draw(x, y);
-
-					// Once something is drawn, no longer need to draw anything else.
-					if (isPixelDrawn) {
-						break;
-					}
-
-				}
-				
-				// If nothing was drawn at that position, draw the empty cell instead.
-				if (!isPixelDrawn) {
-					System.out.print(background);
-				}
-			}
-			System.out.println();
+	@Override
+	public boolean drawLocal(int localX, int localY) {
+		boolean isPixelOn = pixels[localY][localX];
+		
+		if (isPixelOn) {
+			drawSymbol();
 		}
-	}
-	
-	/**
-	 * Adds a shape to the canvas.
-	 * @param shape  the shape to add
-	 */
-	public void add(Shape shape) {
-		shapes.add(shape);
+		
+		return isPixelOn;
 	}
 
 }
-		
